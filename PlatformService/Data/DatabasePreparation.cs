@@ -1,24 +1,39 @@
+using Microsoft.EntityFrameworkCore;
 using PlatformService.Models;
 
 namespace PlatformService.Data;
 
 public static class DatabasePreparation
 {
-    public static void Populate(IApplicationBuilder applicationBuilder)
+    public static void Populate(IApplicationBuilder applicationBuilder, bool isProduction)
     {
-        using(var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
+        using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
         {
-            SeedData(serviceScope.ServiceProvider.GetService<AppDbContext>());
+            SeedData(serviceScope.ServiceProvider.GetService<AppDbContext>(), isProduction);
         }
     }
 
-    private static void SeedData(AppDbContext? context)
+    private static void SeedData(AppDbContext? context, bool isProduction)
     {
-        if(context == null)
+        if (context == null)
         {
             throw new ArgumentNullException(nameof(context));
         }
-        if(context.Platforms.Any())
+
+        if (isProduction)
+        {
+            Console.WriteLine("--> Attempting to apply migrations...");
+            try
+            {
+                context.Database.Migrate();
+            }
+            catch (Exception ex) 
+            { 
+                Console.WriteLine($"Could not apply migrations, reason : {ex.Message}");
+            }
+        }
+
+        if (context.Platforms.Any())
         {
             Console.WriteLine("--> We already have data");
             return;
@@ -31,7 +46,7 @@ public static class DatabasePreparation
             {
                 Name = "DotNet",
                 Publisher = "Microsoft",
-                Cost = "Free"    
+                Cost = "Free"
             },
             new Platform()
             {
