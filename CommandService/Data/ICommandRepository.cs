@@ -12,6 +12,8 @@ public interface ICommandRepository
 
     bool PlatformExists(int platformId);
 
+    bool ExternalPlatformExists(int externalPlatformId);
+
     IEnumerable<Command> GetCommandsForPlatform(int platformId);
 
     Command? GetCommand(int platformId, int commandId);
