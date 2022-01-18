@@ -14,5 +14,5 @@ public class Platform
     [Required]
     public string Name { get; set; } = string.Empty;
 
-    public ICollection<Command> Commands { get; set; } = (ICollection<Command>)Enumerable.Empty<Command>();
+    public ICollection<Command> Commands { get; set; } = new List<Command>();
 }

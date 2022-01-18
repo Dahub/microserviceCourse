@@ -28,7 +28,7 @@ public class EventProcessor : IEventProcessor
         _ = eventType switch
         {
             EventType.PlatformPublished => AddPlatform(message),
-            _ => 0            
+            _ => 0
         };
     }
 
@@ -47,10 +47,11 @@ public class EventProcessor : IEventProcessor
                 {
                     repo.CreatePlatform(platform);
                     repo.SaveChanges();
+                    Console.WriteLine($"--> Platform added {platform.ExternalId}");
                 }
                 else
                 {
-                Console.WriteLine($"--> Platform Id {platform.ExternalId}  already exists");
+                    Console.WriteLine($"--> Platform Id {platform.ExternalId}  already exists");
                 }
             }
             catch (Exception ex)
