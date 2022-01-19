@@ -17,3 +17,4 @@ message GrpcPlatformModel{
 message PlatformResponse {
     repeated GrpcPlatformModel platform = 1;
 }
+

@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using PlatformService.AsyncDataServices;
 using PlatformService.Data;
+using PlatformService.SyncDataServices.Grpc;
 using PlatformService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,7 @@ else
 builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
 builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
+builder.Services.AddGrpc();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -33,8 +36,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+app.UseRouting();
+app.UseEndpoints(endpoints => {
+    endpoints.MapControllers();
+    endpoints.MapGrpcService<GrpcPlatformService>();
 
-app.MapControllers();
+    endpoints.MapGet("/protos/platforms.proto", 
+        async context => await context.Response.WriteAsync(File.ReadAllText("Protos/platforms.proto")));
+});
 
 DatabasePreparation.Populate(app, builder.Environment.IsProduction());
 
